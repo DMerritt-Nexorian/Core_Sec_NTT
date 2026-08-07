@@ -5,7 +5,7 @@
 use core_sec_field::FieldElement;
 
 /// Polynomial wrapper containing exactly 256 coefficients of modular field elements.
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Polynomial<const Q: u32>(pub [FieldElement<Q>; 256]);
 
 impl<const Q: u32> Polynomial<Q> {
@@ -283,7 +283,6 @@ mod tests {
         }
 
         let mut transformed = original.clone();
-        let mut transformed = original;
         ntt_forward_kem(&mut transformed);
         assert_ne!(original, transformed);
 
@@ -299,7 +298,6 @@ mod tests {
         }
 
         let mut transformed = original.clone();
-        let mut transformed = original;
         ntt_forward_dsa(&mut transformed);
         assert_ne!(original, transformed);
 
