@@ -5,7 +5,7 @@
 use core_sec_field::FieldElement;
 
 /// Polynomial wrapper containing exactly 256 coefficients of modular field elements.
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Polynomial<const Q: u32>(pub [FieldElement<Q>; 256]);
 
 impl<const Q: u32> Polynomial<Q> {
@@ -21,6 +21,19 @@ impl<const Q: u32> Polynomial<Q> {
     #[must_use]
     pub const fn zero() -> Self {
         Self([FieldElement::new(0); 256])
+    }
+}
+
+/// Secure zeroization on drop for intermediate polynomial buffers.
+impl<const Q: u32> Drop for Polynomial<Q> {
+    #[inline]
+    fn drop(&mut self) {
+        let mut i = 0;
+        while i < 256 {
+            self.0[i] = FieldElement::new(0);
+            core::hint::black_box(&mut self.0[i]);
+            i += 1;
+        }
     }
 }
 
@@ -269,7 +282,7 @@ mod tests {
             original.0[i] = FieldElement::new((i * 13 + 5) as u32 % 3329);
         }
 
-        let mut transformed = original;
+        let mut transformed = original.clone();
         ntt_forward_kem(&mut transformed);
         assert_ne!(original, transformed);
 
@@ -284,7 +297,7 @@ mod tests {
             original.0[i] = FieldElement::new((i * 101 + 17) as u32 % 8380417);
         }
 
-        let mut transformed = original;
+        let mut transformed = original.clone();
         ntt_forward_dsa(&mut transformed);
         assert_ne!(original, transformed);
 

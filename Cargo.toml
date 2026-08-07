@@ -2,7 +2,7 @@
 members = [
     "core_sec_field",
     "core_sec_ntt",
-    "core_sec_emb",
+    "core_sec_verifier",
 ]
 resolver = "2"
 
@@ -11,3 +11,4 @@ opt-level = 3
 lto = true
 codegen-units = 1
 panic = "abort"
+strip = true

@@ -1,0 +1,19 @@
+name: ACVP KAT Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  kat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Execute Workspace Tests & ACVP KAT
+        run: cargo test --workspace --all-features

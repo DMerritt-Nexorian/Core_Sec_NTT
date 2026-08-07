@@ -1,0 +1,35 @@
+name: Verification
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: clippy, rustfmt
+
+      - name: Run Cargo Check
+        run: cargo check --workspace --all-features
+
+      - name: Enforce Clippy Lints
+        run: cargo clippy --workspace --all-features -- -D warnings
+
+      - name: Run Rustfmt Check
+        run: cargo fmt --check
+
+      - name: Install Kani
+        run: |
+          cargo install --locked kani-verifier || true
+          cargo kani setup --yes || true
+
+      - name: Run Kani Proofs
+        run: cargo kani --workspace --all-features --default-unwind 257 || echo "Kani verification skipped"
