@@ -10,6 +10,10 @@ pub struct FieldElement<const Q: u32> {
 
 impl<const Q: u32> FieldElement<Q> {
     /// Creates a new field element. Enforces val < Q.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `val` is greater than or equal to `Q`.
     #[inline]
     #[must_use]
     pub const fn new(val: u32) -> Self {
@@ -67,11 +71,12 @@ impl<const Q: u32> FieldElement<Q> {
     }
 
     /// Constant-time Montgomery reduction.
-    /// Maps a 32-bit signed or 64-bit signed product/value to a representative modulo Q.
-    /// For Q=3329 (ML-KEM): R = 2^16, q_inv = -3329^-1 mod 2^16 = 3327 (as signed 16-bit: -3327).
-    /// For Q=8380417 (ML-DSA): R = 2^32, q_inv = -8380417^-1 mod 2^32 = 4236238847.
+    /// Maps a 32-bit signed or 64-bit signed product/value to a representative modulo `Q`.
+    /// For `Q = 3329` (ML-KEM): `R = 2^16`, `q_inv` = -3329^-1 mod 2^16 = 3327 (as signed 16-bit: -3327).
+    /// For `Q = 8_380_417` (ML-DSA): `R = 2^32`, `q_inv` = -8_380_417^-1 mod 2^32 = 4236238847.
     #[inline]
     #[must_use]
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::cast_possible_wrap)]
     pub const fn montgomery_reduce(a: i64) -> Self {
         if Q == 3329 {
             // ML-KEM Montgomery reduction
@@ -83,14 +88,14 @@ impl<const Q: u32> FieldElement<Q> {
             let u_shifted = u + 3329; // now in [0, 2q-1]
             let val = Self::sub_pick(u_shifted as u32);
             Self { val }
-        } else if Q == 8380417 {
+        } else if Q == 8_380_417 {
             // ML-DSA Montgomery reduction
-            let q_neg_inverse = 4236238847u64;
-            let a_low = (a as u64) & 0xffffffff;
-            let t = a_low.wrapping_mul(q_neg_inverse) & 0xffffffff;
-            let b = a.wrapping_add((t as i64).wrapping_mul(8380417));
+            let q_neg_inverse = 4_236_238_847u64;
+            let a_low = (a as u64) & 0xffff_ffff;
+            let t = a_low.wrapping_mul(q_neg_inverse) & 0xffff_ffff;
+            let b = a.wrapping_add((t as i64).wrapping_mul(8_380_417));
             let c = b >> 32;
-            let c_shifted = c + 8380417; // now in [0, 2q-1]
+            let c_shifted = c + 8_380_417; // now in [0, 2q-1]
             let val = Self::sub_pick(c_shifted as u32);
             Self { val }
         } else {
@@ -100,22 +105,23 @@ impl<const Q: u32> FieldElement<Q> {
     }
 
     /// Constant-time Barrett reduction.
-    /// Maps a 32-bit/64-bit value to a representative modulo Q.
-    /// For Q=3329 (ML-KEM): precomputed v = floor(2^26 / q) = 20158.
-    /// For Q=8380417 (ML-DSA): precomputed v = floor(2^46 / q) = 8396807.
+    /// Maps a 32-bit/64-bit value to a representative modulo `Q`.
+    /// For `Q = 3329` (ML-KEM): precomputed `v` = floor(2^26 / q) = 20158.
+    /// For `Q = 8_380_417` (ML-DSA): precomputed `v` = floor(2^46 / q) = `8_396_807`.
     #[inline]
     #[must_use]
+    #[allow(clippy::cast_possible_truncation)]
     pub const fn barrett_reduce(a: u64) -> Self {
         if Q == 3329 {
-            let v = 20158u64;
+            let v = 20_158u64;
             let t = (a.wrapping_mul(v)) >> 26;
             let r = a.wrapping_sub(t.wrapping_mul(3329));
             let r1 = Self::sub_pick(r as u32);
             Self { val: Self::sub_pick(r1) }
-        } else if Q == 8380417 {
-            let v = 8396807u128;
+        } else if Q == 8_380_417 {
+            let v = 8_396_807u128;
             let t = ((a as u128).wrapping_mul(v)) >> 46;
-            let r = (a as u128).wrapping_sub(t.wrapping_mul(8380417));
+            let r = (a as u128).wrapping_sub(t.wrapping_mul(8_380_417));
             let r1 = Self::sub_pick(r as u32);
             Self { val: Self::sub_pick(r1) }
         } else {
@@ -126,11 +132,9 @@ impl<const Q: u32> FieldElement<Q> {
     /// Multiply two field elements using Montgomery reduction on the product.
     #[inline]
     #[must_use]
+    #[allow(clippy::cast_possible_truncation)]
     pub const fn mul(self, other: Self) -> Self {
-        if Q == 3329 {
-            let prod = (self.val as i64).wrapping_mul(other.val as i64);
-            Self::montgomery_reduce(prod)
-        } else if Q == 8380417 {
+        if Q == 3329 || Q == 8_380_417 {
             let prod = (self.val as i64).wrapping_mul(other.val as i64);
             Self::montgomery_reduce(prod)
         } else {
@@ -183,8 +187,8 @@ mod tests {
 
         for i in 0..10_000 {
             let val = i as u64;
-            let r = FieldElement::<8380417>::barrett_reduce(val);
-            assert_eq!(r.value(), (val % 8380417) as u32);
+            let r = FieldElement::<8_380_417>::barrett_reduce(val);
+            assert_eq!(r.value(), (val % 8_380_417) as u32);
         }
     }
 
@@ -201,8 +205,8 @@ mod tests {
         let r_inv_8380417_val = 8265825;
         for i in -5000..5000 {
             let val = i as i64;
-            let res = FieldElement::<8380417>::montgomery_reduce(val);
-            let expected = (val * r_inv_8380417_val).rem_euclid(8380417) as u32;
+            let res = FieldElement::<8_380_417>::montgomery_reduce(val);
+            let expected = (val * r_inv_8380417_val).rem_euclid(8_380_417) as u32;
             assert_eq!(res.value(), expected);
         }
     }

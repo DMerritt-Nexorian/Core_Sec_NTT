@@ -1,6 +1,7 @@
 #![no_std]
 #![deny(unsafe_code)]
 #![deny(clippy::pedantic)]
+#![allow(clippy::unreadable_literal)]
 
 // We need Vec for JSON tests
 #[cfg(test)]
@@ -77,7 +78,8 @@ pub fn proof_constant_time_execution() {
 
 /// Bare-metal C-ABI compatible wrapper for Forward NTT (ML-KEM).
 /// Performs forward transformation in-place without dynamic memory allocation.
-#[inline]
+#[allow(unsafe_code)]
+#[unsafe(no_mangle)]
 pub extern "C" fn safe_ntt_forward_kem(poly_coeffs: &mut [u32; 256]) {
     let mut poly = Polynomial::<3329>::zero();
     let mut i = 0;
@@ -95,7 +97,8 @@ pub extern "C" fn safe_ntt_forward_kem(poly_coeffs: &mut [u32; 256]) {
 
 /// Bare-metal C-ABI compatible wrapper for Inverse NTT (ML-KEM).
 /// Performs inverse transformation in-place without dynamic memory allocation.
-#[inline]
+#[allow(unsafe_code)]
+#[unsafe(no_mangle)]
 pub extern "C" fn safe_ntt_inverse_kem(poly_coeffs: &mut [u32; 256]) {
     let mut poly = Polynomial::<3329>::zero();
     let mut i = 0;
@@ -113,7 +116,8 @@ pub extern "C" fn safe_ntt_inverse_kem(poly_coeffs: &mut [u32; 256]) {
 
 /// Bare-metal C-ABI compatible wrapper for Forward NTT (ML-DSA).
 /// Performs forward transformation in-place without dynamic memory allocation.
-#[inline]
+#[allow(unsafe_code)]
+#[unsafe(no_mangle)]
 pub extern "C" fn safe_ntt_forward_dsa(poly_coeffs: &mut [u32; 256]) {
     let mut poly = Polynomial::<8380417>::zero();
     let mut i = 0;
@@ -131,7 +135,8 @@ pub extern "C" fn safe_ntt_forward_dsa(poly_coeffs: &mut [u32; 256]) {
 
 /// Bare-metal C-ABI compatible wrapper for Inverse NTT (ML-DSA).
 /// Performs inverse transformation in-place without dynamic memory allocation.
-#[inline]
+#[allow(unsafe_code)]
+#[unsafe(no_mangle)]
 pub extern "C" fn safe_ntt_inverse_dsa(poly_coeffs: &mut [u32; 256]) {
     let mut poly = Polynomial::<8380417>::zero();
     let mut i = 0;
@@ -148,7 +153,8 @@ pub extern "C" fn safe_ntt_inverse_dsa(poly_coeffs: &mut [u32; 256]) {
 }
 
 /// Pointwise modular multiplication wrapper compatible with C-ABI.
-#[inline]
+#[allow(unsafe_code)]
+#[unsafe(no_mangle)]
 pub extern "C" fn safe_pointwise_mul_kem(
     a_coeffs: &[u32; 256],
     b_coeffs: &[u32; 256],
@@ -170,7 +176,8 @@ pub extern "C" fn safe_pointwise_mul_kem(
         i += 1;
     }
 }
-#[inline]
+#[allow(unsafe_code)]
+#[unsafe(no_mangle)]
 pub extern "C" fn safe_pointwise_mul_dsa(
     a_coeffs: &[u32; 256],
     b_coeffs: &[u32; 256],
