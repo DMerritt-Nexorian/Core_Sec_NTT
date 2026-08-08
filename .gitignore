@@ -1,3 +1,9 @@
 target/
 **/*.rs.bk
 *.log
+
+# ACVP Credentials & Keys
+*.key
+*.crt
+*.csr
+*_totp.txt
