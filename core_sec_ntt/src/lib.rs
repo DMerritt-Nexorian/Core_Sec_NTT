@@ -1,6 +1,7 @@
 #![no_std]
 #![deny(unsafe_code)]
 #![deny(clippy::pedantic)]
+#![allow(clippy::unreadable_literal)]
 
 use core_sec_field::FieldElement;
 
