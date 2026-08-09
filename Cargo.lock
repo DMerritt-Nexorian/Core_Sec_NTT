@@ -96,18 +96,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
 
 [[package]]
-name = "core_sec_field"
-version = "0.1.0"
-
-[[package]]
-name = "core_sec_ntt"
-version = "0.1.0"
-dependencies = [
- "core_sec_field",
-]
-
-[[package]]
-name = "core_sec_verifier"
+name = "core_sec_emb"
 version = "0.1.0"
 dependencies = [
  "base64",
@@ -118,6 +107,17 @@ dependencies = [
  "serde_json",
  "tokio",
  "totp-rs",
+]
+
+[[package]]
+name = "core_sec_field"
+version = "0.1.0"
+
+[[package]]
+name = "core_sec_ntt"
+version = "0.1.0"
+dependencies = [
+ "core_sec_field",
 ]
 
 [[package]]
