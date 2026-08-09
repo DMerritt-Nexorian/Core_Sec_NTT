@@ -175,6 +175,12 @@ impl<const Q: u32> FieldElement<Q> {
 }
 
 #[cfg(test)]
+#[allow(
+    clippy::all,
+    clippy::pedantic,
+    clippy::cast_lossless,
+    clippy::cast_possible_truncation
+)]
 mod tests {
     use super::*;
 

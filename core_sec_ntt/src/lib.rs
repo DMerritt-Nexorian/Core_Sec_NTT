@@ -568,6 +568,7 @@ pub fn ntt_pointwise_mul<const Q: u32>(
 }
 
 #[cfg(test)]
+#[allow(clippy::all, clippy::pedantic, clippy::cast_possible_truncation)]
 mod tests {
     use super::*;
 
