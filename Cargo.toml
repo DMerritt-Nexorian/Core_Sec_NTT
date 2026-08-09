@@ -2,7 +2,7 @@
 members = [
     "core_sec_field",
     "core_sec_ntt",
-    "core_sec_verifier",
+    "core_sec_emb",
 ]
 resolver = "2"
 
