@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2026 NexusCorps / Dennis W. Merritt. All Rights Reserved.
+ *
+ * Proprietary and Confidential.
+ * Authorized for use solely under evaluation terms.
+ */
+
 #![no_std]
 #![deny(unsafe_code)]
 #![deny(clippy::pedantic)]
@@ -59,7 +66,9 @@ impl<const Q: u32> FieldElement<Q> {
     #[must_use]
     pub const fn add(self, other: Self) -> Self {
         let sum = self.val.wrapping_add(other.val);
-        Self { val: Self::sub_pick(sum) }
+        Self {
+            val: Self::sub_pick(sum),
+        }
     }
 
     /// Constant-time subtraction: `(self - other) mod Q`.
@@ -67,7 +76,9 @@ impl<const Q: u32> FieldElement<Q> {
     #[must_use]
     pub const fn sub(self, other: Self) -> Self {
         let diff = self.val.wrapping_add(Q).wrapping_sub(other.val);
-        Self { val: Self::sub_pick(diff) }
+        Self {
+            val: Self::sub_pick(diff),
+        }
     }
 
     /// Constant-time Montgomery reduction.
@@ -76,7 +87,11 @@ impl<const Q: u32> FieldElement<Q> {
     /// For `Q = 8_380_417` (ML-DSA): `R = 2^32`, `q_inv` = -8_380_417^-1 mod 2^32 = 4236238847.
     #[inline]
     #[must_use]
-    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::cast_possible_wrap)]
+    #[allow(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        clippy::cast_possible_wrap
+    )]
     pub const fn montgomery_reduce(a: i64) -> Self {
         if Q == 3329 {
             // ML-KEM Montgomery reduction
@@ -117,15 +132,21 @@ impl<const Q: u32> FieldElement<Q> {
             let t = (a.wrapping_mul(v)) >> 26;
             let r = a.wrapping_sub(t.wrapping_mul(3329));
             let r1 = Self::sub_pick(r as u32);
-            Self { val: Self::sub_pick(r1) }
+            Self {
+                val: Self::sub_pick(r1),
+            }
         } else if Q == 8_380_417 {
             let v = 8_396_807u128;
             let t = ((a as u128).wrapping_mul(v)) >> 46;
             let r = (a as u128).wrapping_sub(t.wrapping_mul(8_380_417));
             let r1 = Self::sub_pick(r as u32);
-            Self { val: Self::sub_pick(r1) }
+            Self {
+                val: Self::sub_pick(r1),
+            }
         } else {
-            Self { val: (a % (Q as u64)) as u32 }
+            Self {
+                val: (a % (Q as u64)) as u32,
+            }
         }
     }
 
@@ -138,7 +159,9 @@ impl<const Q: u32> FieldElement<Q> {
             let prod = (self.val as i64).wrapping_mul(other.val as i64);
             Self::montgomery_reduce(prod)
         } else {
-            Self { val: ((self.val as u64).wrapping_mul(other.val as u64) % (Q as u64)) as u32 }
+            Self {
+                val: ((self.val as u64).wrapping_mul(other.val as u64) % (Q as u64)) as u32,
+            }
         }
     }
 

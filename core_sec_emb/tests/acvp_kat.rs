@@ -21,7 +21,8 @@ fn test_acvp_kat_vectors_fips_203() {
                     if let Some(test_arr) = tests.as_array() {
                         for test_case in test_arr {
                             // Extract input and expectedForward arrays of 256 elements
-                            let input_arr: Vec<u32> = test_case.get("input")
+                            let input_arr: Vec<u32> = test_case
+                                .get("input")
                                 .unwrap()
                                 .as_array()
                                 .unwrap()
@@ -29,7 +30,8 @@ fn test_acvp_kat_vectors_fips_203() {
                                 .map(|v| v.as_u64().unwrap() as u32)
                                 .collect();
 
-                            let expected_arr: Vec<u32> = test_case.get("expectedForward")
+                            let expected_arr: Vec<u32> = test_case
+                                .get("expectedForward")
                                 .unwrap()
                                 .as_array()
                                 .unwrap()
