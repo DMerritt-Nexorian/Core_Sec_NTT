@@ -1,13 +1,20 @@
+/*
+ * Copyright (C) 2026 NexusCorps / Dennis W. Merritt. All Rights Reserved.
+ *
+ * Proprietary and Confidential.
+ * Authorized for use solely under evaluation terms.
+ */
+
 // Client CLI utility for NIST ACVTS Demo API with mTLS and TOTP authentication.
 // Enables potential buyers to see local validation success.
 
+use base64::{Engine as _, engine::general_purpose::STANDARD};
+use reqwest::{Client, Identity};
 use std::error::Error;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
-use reqwest::{Client, Identity};
-use totp_rs::{Algorithm, TOTP, Secret};
-use base64::{Engine as _, engine::general_purpose::STANDARD};
+use totp_rs::{Algorithm, Secret, TOTP};
 
 /// Loads the private key and certificate to configure the mTLS Identity.
 fn build_identity<P: AsRef<Path>>(key_path: P, cert_path: P) -> Result<Identity, Box<dyn Error>> {
@@ -45,13 +52,7 @@ fn generate_totp_token(seed_path: &str) -> Result<String, Box<dyn Error>> {
 
     // Use raw bytes as HMAC-SHA1 key for standard 30-second, 6-digit TOTP token
     let secret = Secret::Raw(raw_bytes);
-    let totp = TOTP::new(
-        Algorithm::SHA1,
-        6,
-        1,
-        30,
-        secret.to_bytes()?,
-    )?;
+    let totp = TOTP::new(Algorithm::SHA1, 6, 1, 30, secret.to_bytes()?)?;
     let token = totp.generate_current()?;
     Ok(token)
 }
@@ -81,7 +82,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
             println!("mTLS Identity configured successfully.");
         }
         Err(e) => {
-            println!("Warning: Could not configure mTLS identity ({e}). Proceeding without certificate...");
+            println!(
+                "Warning: Could not configure mTLS identity ({e}). Proceeding without certificate..."
+            );
         }
     }
 
@@ -95,7 +98,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
             // Send request to ACVTS demo server
             println!("Sending GET request to ACVTS Demo API: {api_url}");
-            let response = client.get(&api_url)
+            let response = client
+                .get(&api_url)
                 .header("Authorization", format!("Bearer {token}"))
                 .send()
                 .await;

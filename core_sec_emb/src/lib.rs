@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2026 NexusCorps / Dennis W. Merritt. All Rights Reserved.
+ *
+ * Proprietary and Confidential.
+ * Authorized for use solely under evaluation terms.
+ */
+
 #![no_std]
 #![deny(unsafe_code)]
 #![deny(clippy::pedantic)]
@@ -8,7 +15,10 @@
 extern crate alloc;
 
 use core_sec_field::FieldElement;
-use core_sec_ntt::{Polynomial, ntt_forward_kem, ntt_forward_dsa, ntt_inverse_kem, ntt_inverse_dsa, ntt_pointwise_mul};
+use core_sec_ntt::{
+    Polynomial, ntt_forward_dsa, ntt_forward_kem, ntt_inverse_dsa, ntt_inverse_kem,
+    ntt_pointwise_mul,
+};
 
 /// Kani formal verification harness for ML-KEM Montgomery reduction.
 #[cfg(kani)]
@@ -41,7 +51,10 @@ pub fn proof_ntt_forward_inverse_identity() {
 
     let mut j = 0;
     while j < 256 {
-        kani::assert(poly.0[j].value() == original.0[j].value(), "Roundtrip correctness");
+        kani::assert(
+            poly.0[j].value() == original.0[j].value(),
+            "Roundtrip correctness",
+        );
         j += 1;
     }
 }
@@ -73,7 +86,10 @@ pub fn proof_constant_time_execution() {
     // Verify constant-time conditional subtract sub_pick is free of overflows/panics
     let input: u32 = kani::any();
     let reduced = FieldElement::<3329>::sub_pick(input);
-    kani::assert(reduced < 3329 || reduced == input.wrapping_sub(3329), "sub_pick correctness");
+    kani::assert(
+        reduced < 3329 || reduced == input.wrapping_sub(3329),
+        "sub_pick correctness",
+    );
 }
 
 /// Bare-metal C-ABI compatible wrapper for Forward NTT (ML-KEM).
@@ -158,7 +174,7 @@ pub extern "C" fn safe_ntt_inverse_dsa(poly_coeffs: &mut [u32; 256]) {
 pub extern "C" fn safe_pointwise_mul_kem(
     a_coeffs: &[u32; 256],
     b_coeffs: &[u32; 256],
-    res_coeffs: &mut [u32; 256]
+    res_coeffs: &mut [u32; 256],
 ) {
     let mut a = Polynomial::<3329>::zero();
     let mut b = Polynomial::<3329>::zero();
@@ -181,7 +197,7 @@ pub extern "C" fn safe_pointwise_mul_kem(
 pub extern "C" fn safe_pointwise_mul_dsa(
     a_coeffs: &[u32; 256],
     b_coeffs: &[u32; 256],
-    res_coeffs: &mut [u32; 256]
+    res_coeffs: &mut [u32; 256],
 ) {
     let mut a = Polynomial::<8380417>::zero();
     let mut b = Polynomial::<8380417>::zero();
