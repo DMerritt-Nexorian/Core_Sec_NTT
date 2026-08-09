@@ -1,0 +1,7 @@
+[package]
+name = "core_sec_ntt"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+core_sec_field = { path = "../core_sec_field" }

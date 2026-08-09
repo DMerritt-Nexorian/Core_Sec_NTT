@@ -1,0 +1,27 @@
+[package]
+name = "core_sec_verifier"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "acvts_client"
+path = "src/bin/acvts_client.rs"
+required-features = ["client"]
+
+[dependencies]
+core_sec_field = { path = "../core_sec_field" }
+core_sec_ntt = { path = "../core_sec_ntt" }
+tokio = { version = "1.0", features = ["full"], optional = true }
+reqwest = { version = "0.11", features = ["native-tls", "json"], optional = true }
+totp-rs = { version = "5.0", optional = true }
+base64 = { version = "0.21", optional = true }
+
+[dev-dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[features]
+client = ["dep:tokio", "dep:reqwest", "dep:totp-rs", "dep:base64"]
+
+[lints.rust]
+unexpected_cfgs = { level = "allow", check-cfg = ['cfg(kani)'] }
