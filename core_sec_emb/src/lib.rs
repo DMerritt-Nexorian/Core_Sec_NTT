@@ -217,12 +217,6 @@ pub extern "C" fn safe_pointwise_mul_dsa(
 }
 
 #[cfg(test)]
-#[allow(
-    clippy::all,
-    clippy::pedantic,
-    clippy::cast_possible_truncation,
-    clippy::collapsible_if
-)]
 mod tests {
     use super::*;
     use alloc::vec::Vec;
