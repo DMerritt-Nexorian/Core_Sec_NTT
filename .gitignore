@@ -7,3 +7,8 @@ target/
 *.crt
 *.csr
 *_totp.txt
+NexusCorps_Dennis_Merritt_*
+*.key
+*.crt
+*.csr
+*_totp.txt
