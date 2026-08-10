@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2026 NexusCorps / Dennis W. Merritt. All Rights Reserved.
+ *
+ * Proprietary and Confidential.
+ * Authorized for use solely under evaluation terms.
+ */
+
 #![no_std]
 #![deny(unsafe_code)]
 #![deny(clippy::pedantic)]
