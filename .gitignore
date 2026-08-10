@@ -2,13 +2,15 @@ target/
 **/*.rs.bk
 *.log
 
-# ACVP Credentials & Keys
+# Strict Secret Ignorance
+*.pem
 *.key
 *.crt
-*.csr
+*.p12
+.env
+acvp_config.json
+
+# Legacy local credentials ignore
 *_totp.txt
 NexusCorps_Dennis_Merritt_*
-*.key
-*.crt
 *.csr
-*_totp.txt

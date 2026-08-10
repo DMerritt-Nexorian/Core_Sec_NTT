@@ -1,4 +1,4 @@
-name: Verification
+name: CI/CD Pipeline
 
 on:
   push:
@@ -7,15 +7,16 @@ on:
     branches: [ main ]
 
 jobs:
-  verify:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Rust toolchain
+      - name: Install Rust nightly toolchain
         uses: dtolnay/rust-toolchain@nightly
         with:
           components: clippy, rustfmt
+          targets: thumbv7em-none-eabi, riscv32imac-unknown-none-elf
 
       - name: Run Cargo Check
         run: cargo check --workspace --all-features
@@ -25,6 +26,15 @@ jobs:
 
       - name: Run Rustfmt Check
         run: cargo fmt --check
+
+      - name: Execute Workspace Tests & ACVP KAT
+        run: cargo test --workspace --all-features
+
+      - name: Verify ARM Target Compilation
+        run: cargo check --target thumbv7em-none-eabi --release -p core_sec_emb --lib
+
+      - name: Verify RISC-V Target Compilation
+        run: cargo check --target riscv32imac-unknown-none-elf --release -p core_sec_emb --lib
 
       - name: Install Kani
         run: |
