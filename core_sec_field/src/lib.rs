@@ -1,13 +1,10 @@
-/*
- * Copyright (C) 2026 NexusCorps / Dennis W. Merritt. All Rights Reserved.
- *
- * Proprietary and Confidential.
- * Authorized for use solely under evaluation terms.
- */
-
 #![no_std]
 #![deny(unsafe_code)]
 #![deny(clippy::pedantic)]
+#![allow(unexpected_cfgs)]
+
+#[cfg(kani)]
+extern crate kani;
 
 /// Compile-time checked field elements for prime moduli.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -179,7 +176,10 @@ impl<const Q: u32> FieldElement<Q> {
     clippy::all,
     clippy::pedantic,
     clippy::cast_lossless,
-    clippy::cast_possible_truncation
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    clippy::unreadable_literal,
+    clippy::many_single_char_names
 )]
 mod tests {
     use super::*;
