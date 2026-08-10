@@ -8,6 +8,10 @@
 #![no_std]
 #![deny(unsafe_code)]
 #![deny(clippy::pedantic)]
+#![allow(unexpected_cfgs)]
+
+#[cfg(kani)]
+extern crate kani;
 
 /// Compile-time checked field elements for prime moduli.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]

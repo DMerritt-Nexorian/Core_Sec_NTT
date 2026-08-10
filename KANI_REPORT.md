@@ -22,3 +22,13 @@ All harnesses compiled and run with 100% SUCCESS under Kani, proving:
 To keep model checking mathematically rigorous and tractable, the following unwinding bounds are passed:
 - Loops processing arrays of size 256 are unwound using a maximum of `257` steps.
 - Bounded model checking utilizes SAT Solver CaDiCaL to verify properties over the entire algebraic space.
+
+## 4. Bare-Metal `#![no_std]` Verification
+To support Kani model checking on bare-metal and custom target profiles, the conditional `kani` crate is imported at the top of the root library units (`core_sec_field/src/lib.rs` and `core_sec_ntt/src/lib.rs`):
+```rust
+#![no_std]
+
+#[cfg(kani)]
+extern crate kani;
+```
+This enables seamless symbolic verification in isolated custom target pipelines.

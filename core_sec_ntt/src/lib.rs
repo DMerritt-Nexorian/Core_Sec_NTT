@@ -9,6 +9,10 @@
 #![deny(unsafe_code)]
 #![deny(clippy::pedantic)]
 #![allow(clippy::unreadable_literal)]
+#![allow(unexpected_cfgs)]
+
+#[cfg(kani)]
+extern crate kani;
 
 use core_sec_field::FieldElement;
 
